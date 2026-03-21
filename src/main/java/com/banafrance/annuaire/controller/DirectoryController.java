@@ -16,15 +16,15 @@ public class DirectoryController {
     private final ProfileService profileService;
 
 
-    //Todo : add filter - occupation
     @GetMapping
     public ResponseEntity<PageResponse<ProfileResponse>> getDirectory(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(required = false) String city,
             @RequestParam(required = false) String country,
+            @RequestParam(required = false) String occupation,
             @RequestParam(required = false) String name,
             Authentication authentication) {
-        return ResponseEntity.ok(profileService.getDirectory(page, size, city, country, name, authentication));
+        return ResponseEntity.ok(profileService.getDirectory(page, size, city, country, occupation, name, authentication));
     }
 }

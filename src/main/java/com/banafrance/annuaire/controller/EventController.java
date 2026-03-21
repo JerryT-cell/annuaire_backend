@@ -11,10 +11,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.UUID;
 
 @RestController
@@ -25,6 +25,7 @@ public class EventController {
     private final EventService eventService;
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<EventResponse> createEvent(
             @AuthenticationPrincipal UserPrincipal principal,
             @Valid @RequestBody EventRequest request) {
@@ -32,6 +33,7 @@ public class EventController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<EventResponse> updateEvent(
             @PathVariable UUID id,
             @AuthenticationPrincipal UserPrincipal principal,
@@ -40,6 +42,7 @@ public class EventController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteEvent(
             @PathVariable UUID id,
             @AuthenticationPrincipal UserPrincipal principal) {
@@ -48,6 +51,7 @@ public class EventController {
     }
 
     @PostMapping("/{id}/cancel")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<EventResponse> cancelEvent(
             @PathVariable UUID id,
             @AuthenticationPrincipal UserPrincipal principal) {

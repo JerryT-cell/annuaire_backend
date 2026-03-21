@@ -26,13 +26,14 @@ public class ProfileService {
     private final ProfileRepository profileRepository;
 
     public PageResponse<ProfileResponse> getDirectory(int page, int size, String city, String country,
-                                                       String name, Authentication authentication) {
+                                                       String occupation, String name, Authentication authentication) {
         List<ProfileVisibility> visibilities = resolveVisibilities(authentication);
 
         Page<ProfileResponse> result = profileRepository.findFiltered(
                 visibilities,
                 city,
                 country,
+                occupation,
                 name,
                 PageRequest.of(page, size, Sort.by("surname").ascending())
         ).map(this::toResponse);

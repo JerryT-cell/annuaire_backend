@@ -6,7 +6,6 @@ import com.banafrance.annuaire.dto.request.RsvpRequest;
 import com.banafrance.annuaire.dto.response.EventResponse;
 import com.banafrance.annuaire.dto.response.PageResponse;
 import com.banafrance.annuaire.dto.response.RsvpResponse;
-import com.banafrance.annuaire.exception.AccessDeniedException;
 import com.banafrance.annuaire.exception.EventFullException;
 import com.banafrance.annuaire.exception.ResourceNotFoundException;
 import com.banafrance.annuaire.model.*;
@@ -53,7 +52,6 @@ public class EventService {
     public EventResponse updateEvent(UUID eventId, UserPrincipal principal, EventRequest request) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException("Event not found"));
-        checkOrganizer(event, principal);
 
         event.setTitle(request.getTitle());
         event.setDescription(request.getDescription());
@@ -72,7 +70,6 @@ public class EventService {
     public void deleteEvent(UUID eventId, UserPrincipal principal) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException("Event not found"));
-        checkOrganizer(event, principal);
         eventRepository.delete(event);
     }
 
@@ -80,7 +77,6 @@ public class EventService {
     public EventResponse cancelEvent(UUID eventId, UserPrincipal principal) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException("Event not found"));
-        checkOrganizer(event, principal);
         event.setStatus(EventStatus.CANCELLED);
         event = eventRepository.save(event);
         return toResponse(event);
@@ -137,14 +133,6 @@ public class EventService {
                 .userId(principal.getId())
                 .status(rsvp.getStatus())
                 .build();
-    }
-
-    private void checkOrganizer(Event event, UserPrincipal principal) {
-        boolean isAdmin = principal.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-        if (!isAdmin && !event.getOrganizer().getId().equals(principal.getId())) {
-            throw new AccessDeniedException("Only the organizer or admin can modify this event");
-        }
     }
 
     private List<EventVisibility> resolveEventVisibilities(Authentication authentication) {

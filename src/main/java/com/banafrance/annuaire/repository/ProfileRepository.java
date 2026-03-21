@@ -21,6 +21,7 @@ public interface ProfileRepository extends JpaRepository<Profile, UUID> {
         WHERE p.visibility IN :visibilities
         AND (:city IS NULL OR LOWER(p.city) = LOWER(:city))
         AND (:country IS NULL OR LOWER(p.country) = LOWER(:country))
+        AND (:occupation IS NULL OR LOWER(p.occupation) LIKE LOWER(CONCAT('%', :occupation, '%')))
         AND (:name IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%'))
              OR LOWER(p.surname) LIKE LOWER(CONCAT('%', :name, '%')))
     """)
@@ -28,6 +29,7 @@ public interface ProfileRepository extends JpaRepository<Profile, UUID> {
             @Param("visibilities") List<ProfileVisibility> visibilities,
             @Param("city") String city,
             @Param("country") String country,
+            @Param("occupation") String occupation,
             @Param("name") String name,
             Pageable pageable
     );
